@@ -21,8 +21,10 @@ class MainActivity : ComponentActivity() {
         setContent {
             GesturePlayGroundTheme {
                 Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
-                    Box(modifier = Modifier.fillMaxSize().padding(innerPadding)) {
-                        PointerInputKeySample()
+                    Box(modifier = Modifier
+                        .fillMaxSize()
+                        .padding(innerPadding)) {
+                        ZoomableSample1()
                     }
                 }
             }
