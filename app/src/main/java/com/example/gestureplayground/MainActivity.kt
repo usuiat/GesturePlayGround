@@ -24,7 +24,7 @@ class MainActivity : ComponentActivity() {
                     Box(modifier = Modifier
                         .fillMaxSize()
                         .padding(innerPadding)) {
-                        ZoomableSample1()
+                        TouchSlopSample()
                     }
                 }
             }

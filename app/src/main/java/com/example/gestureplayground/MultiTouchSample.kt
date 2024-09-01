@@ -31,25 +31,17 @@ import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.input.pointer.util.VelocityTracker
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.IntOffset
+import androidx.compose.ui.unit.Velocity
 import androidx.compose.ui.unit.dp
+import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.launch
 
 @Composable
 fun MultiTouchSample() {
-    val logs = remember { mutableStateListOf<String>() }
-    val scrollState = rememberLazyListState()
+    val logger = rememberLogger()
     val scope = rememberCoroutineScope()
-    val printLog = { log: String ->
-        logs.add(log)
-        scope.launch {
-            scrollState.scrollToItem(logs.lastIndex)
-        }
-    }
-
+    val dragState = remember { DragState() }
     Column {
-        val x = remember { Animatable(0f) }
-        val y = remember { Animatable(0f) }
-        val velocityTracker = remember { VelocityTracker() }
         Box(
             modifier = Modifier
                 .fillMaxWidth()
@@ -60,37 +52,53 @@ fun MultiTouchSample() {
                         do {
                             val event = awaitPointerEvent()
                             val centroid = event.calculateCentroid()
+                            val uptimeMillis = event.changes.first().uptimeMillis
                             if (centroid.isSpecified) {
                                 scope.launch {
-                                    x.snapTo(centroid.x)
-                                    y.snapTo(centroid.y)
-                                    velocityTracker.addPosition(event.changes.first().uptimeMillis, centroid)
+                                    dragState.dragTo(centroid, uptimeMillis)
+                                    logger.log("Drag velocity (%.0f, %.0f)".format(dragState.velocity.x, dragState.velocity.y))
                                 }
                             }
                         } while (event.changes.any { it.pressed })
-                        val velocity = velocityTracker.calculateVelocity()
-                        scope.launch {
-                            x.animateDecay(velocity.x, exponentialDecay())
-                        }
-                        scope.launch {
-                            y.animateDecay(velocity.y, exponentialDecay())
-                        }
-                        velocityTracker.resetTracking()
+                        scope.launch { dragState.doFling() }
                     }
                 }
         ) {
-            Box(
+            Image(
                 modifier = Modifier
-                    .size(40.dp)
-                    .offset { IntOffset(x.value.toInt(), y.value.toInt()) }
-                    .background(MaterialTheme.colorScheme.primary)
+                    .size(80.dp)
+                    .offset { dragState.offset - IntOffset(40.dp.roundToPx(), 40.dp.roundToPx()) },
+                painter = painterResource(R.drawable.koala),
+                contentDescription = null
             )
         }
+        LogConsole(logger = logger, modifier = Modifier.weight(1f))
+    }
+}
 
-        LazyColumn(state = scrollState, modifier = Modifier.weight(1f)) {
-            items(logs) { event ->
-                Text(event)
-            }
+class DragState() {
+    private val x = Animatable(0f)
+    private val y = Animatable(0f)
+    val offset: IntOffset
+        get() = IntOffset(x.value.toInt(), y.value.toInt())
+    private val velocityTracker = VelocityTracker()
+    val velocity: Velocity
+        get() = velocityTracker.calculateVelocity()
+
+    suspend fun dragTo(position: Offset, uptimeMillis: Long) = coroutineScope {
+        x.snapTo(position.x)
+        y.snapTo(position.y)
+        velocityTracker.addPosition(uptimeMillis, position)
+    }
+
+    suspend fun doFling() = coroutineScope {
+        val velocity = velocityTracker.calculateVelocity()
+        launch {
+            x.animateDecay(velocity.x, exponentialDecay())
         }
+        launch {
+            y.animateDecay(velocity.y, exponentialDecay())
+        }
+        velocityTracker.resetTracking()
     }
 }

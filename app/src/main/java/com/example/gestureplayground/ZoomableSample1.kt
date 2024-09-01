@@ -4,6 +4,7 @@ import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.gestures.awaitEachGesture
+import androidx.compose.foundation.gestures.awaitFirstDown
 import androidx.compose.foundation.gestures.calculateZoom
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -83,9 +84,9 @@ class ZoomState {
     var scale by mutableFloatStateOf(1f)
         private set
 
-    fun canConsumeGesture(zoom: Float): Boolean {
-        return scale != 1f || zoom != 1f
-    }
+fun canConsumeGesture(zoom: Float): Boolean {
+    return scale != 1f || zoom != 1f
+}
 
     fun applyZoom(zoom: Float) {
         scale = (scale * zoom).coerceAtLeast(1f)
