@@ -19,30 +19,32 @@ import androidx.compose.ui.res.painterResource
 
 @Composable
 fun TouchSlopSample() {
-    val logger = rememberLogger()
-    Column {
-        Image(modifier = Modifier
-            .fillMaxWidth()
-            .weight(1f)
-            .background(MaterialTheme.colorScheme.surfaceVariant)
-.pointerInput(Unit) {
-    awaitEachGesture {
-        var distance = 0f
-        do {
+  val logger = rememberLogger()
+  Column {
+    Image(modifier = Modifier
+      .fillMaxWidth()
+      .weight(1f)
+      .background(MaterialTheme.colorScheme.surfaceVariant)
+      .pointerInput(Unit) {
+        awaitEachGesture {
+          var distance = 0f
+          do {
             val event = awaitPointerEvent()
-            distance += event.calculatePan().getDistance()
-        } while (event.changes.any { it.pressed })
-        if (distance > viewConfiguration.touchSlop) {
+            distance += event
+              .calculatePan()
+              .getDistance()
+          } while (event.changes.any { it.pressed })
+          if (distance > viewConfiguration.touchSlop) {
             logger.log("Drag")
-        } else {
+          } else {
             logger.log("Tap")
+          }
         }
-    }
-},
-            painter = painterResource(R.drawable.bumblebee),
-            contentDescription = null,
-            contentScale = ContentScale.Fit
-        )
-        LogConsole(logger = logger, modifier = Modifier.weight(1f))
-    }
+      },
+      painter = painterResource(R.drawable.electriceel),
+      contentDescription = null,
+      contentScale = ContentScale.Fit
+    )
+    LogConsole(logger = logger, modifier = Modifier.weight(1f))
+  }
 }

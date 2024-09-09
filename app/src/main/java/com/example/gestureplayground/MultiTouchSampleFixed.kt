@@ -1,7 +1,5 @@
 package com.example.gestureplayground
 
-import androidx.compose.animation.core.Animatable
-import androidx.compose.animation.core.exponentialDecay
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.gestures.awaitEachGesture
@@ -16,19 +14,15 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.isSpecified
 import androidx.compose.ui.input.pointer.pointerInput
-import androidx.compose.ui.input.pointer.util.VelocityTracker
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
-import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.launch
-import kotlin.math.sqrt
 
 @Composable
-fun MultiTouchSample() {
+fun MultiTouchSampleFixed() {
   val logger = rememberLogger()
   val scope = rememberCoroutineScope()
   val dragState = remember { DragState() }
@@ -46,7 +40,9 @@ fun MultiTouchSample() {
             if (centroid.isSpecified) {
               scope.launch {
                 dragState.dragTo(centroid)
-                dragState.trackVelocity(centroid, time)
+                if (event.changes.size == 1) {
+                  dragState.trackVelocity(centroid, time)
+                }
                 logger.log("Velocity ${dragState.velocity}")
               }
             }
@@ -64,39 +60,5 @@ fun MultiTouchSample() {
       )
     }
     LogConsole(logger = logger, modifier = Modifier.weight(1f))
-  }
-}
-
-class DragState() {
-  private val x = Animatable(300f)
-  private val y = Animatable(300f)
-  val offset: IntOffset
-    get() = IntOffset(x.value.toInt(), y.value.toInt())
-  private val velocityTracker = VelocityTracker()
-  val velocity: String
-    get() {
-      val v = velocityTracker.calculateVelocity()
-      val floatV = sqrt(v.x * v.x + v.y * v.y)
-      return "%.2f".format(floatV)
-    }
-
-  suspend fun dragTo(position: Offset) = coroutineScope {
-    x.snapTo(position.x)
-    y.snapTo(position.y)
-  }
-
-  fun trackVelocity(position: Offset, uptimeMillis: Long) {
-    velocityTracker.addPosition(uptimeMillis, position)
-  }
-
-  suspend fun doFling() = coroutineScope {
-    val velocity = velocityTracker.calculateVelocity()
-    launch {
-      x.animateDecay(velocity.x, exponentialDecay())
-    }
-    launch {
-      y.animateDecay(velocity.y, exponentialDecay())
-    }
-    velocityTracker.resetTracking()
   }
 }

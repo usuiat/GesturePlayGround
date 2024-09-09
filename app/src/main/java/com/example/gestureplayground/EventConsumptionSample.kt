@@ -23,44 +23,39 @@ import androidx.compose.ui.res.painterResource
 import kotlin.math.log
 
 @Composable
-fun EventComsumptionSample() {
-    val logger = rememberLogger()
-    Column {
-        Box(modifier = Modifier
-            .fillMaxWidth()
-            .weight(1f)
-            .background(MaterialTheme.colorScheme.surfaceVariant)
-            .pointerInput(Unit) {
-                awaitEachGesture {
-                    do {
-                        val event = awaitPointerEvent()
-                        if (event.changes.any { it.isConsumed.not() }) {
-                            if (event.type == PointerEventType.Press) {
-                                logger.log("Box is pressed")
-                            }
-                        }
-                    } while (event.changes.any { it.pressed })
-                }
-            },
-        ) {
-            Image(modifier = Modifier
-                .fillMaxSize()
-                .pointerInput(Unit) {
-                    awaitEachGesture {
-                        do {
-                            val event = awaitPointerEvent()
-                            if (event.type == PointerEventType.Press) {
-                                logger.log("Image is pressed")
-                                event.changes.forEach { it.consume() }
-                            }
-                        } while (event.changes.any { it.pressed })
-                    }
-                },
-                painter = painterResource(R.drawable.bumblebee),
-                contentDescription = null,
-                contentScale = ContentScale.Fit
-            )
+fun EventConsumptionSample() {
+  val logger = rememberLogger()
+  Column {
+    Box(modifier = Modifier
+      .fillMaxWidth()
+      .weight(1f)
+      .pointerInput(Unit) {
+        awaitEachGesture {
+          do {
+            val event = awaitPointerEvent()
+            if (event.changes.any { it.isConsumed.not() }) {
+              logger.log("Box ${event.type}")
+            }
+          } while (event.changes.any { it.pressed })
         }
-        LogConsole(logger = logger, modifier = Modifier.weight(1f))
+      },
+    ) {
+      Image(modifier = Modifier
+        .fillMaxSize()
+        .pointerInput(Unit) {
+          awaitEachGesture {
+            do {
+              val event = awaitPointerEvent()
+              logger.log("Image ${event.type}")
+              event.changes.forEach { it.consume() }
+            } while (event.changes.any { it.pressed })
+          }
+        },
+        painter = painterResource(R.drawable.chipmunk),
+        contentDescription = null,
+        contentScale = ContentScale.Fit
+      )
     }
+    LogConsole(logger = logger, modifier = Modifier.weight(1f))
+  }
 }
