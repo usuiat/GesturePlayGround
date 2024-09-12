@@ -15,7 +15,7 @@ import androidx.compose.ui.Modifier
 fun rememberLogger() = remember { Logger() }
 
 @Stable
-class Logger() {
+class Logger {
     private val _logs = mutableStateListOf<String>()
     val logs: List<String> = _logs
 

@@ -67,7 +67,7 @@ fun MultiTouchSample() {
   }
 }
 
-class DragState() {
+class DragState {
   private val x = Animatable(300f)
   private val y = Animatable(300f)
   val offset: IntOffset

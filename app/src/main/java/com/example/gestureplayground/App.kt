@@ -34,7 +34,7 @@ private fun SampleList(
     samples: List<Sample>,
     onSampleSelect: (sample: String) -> Unit
 ) {
-    LazyColumn() {
+    LazyColumn {
         items(samples) { sample ->
             ListItem(
                 headlineContent = { Text(sample.name) },
