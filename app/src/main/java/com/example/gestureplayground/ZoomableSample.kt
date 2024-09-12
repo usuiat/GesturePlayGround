@@ -20,49 +20,50 @@ import androidx.compose.ui.res.painterResource
 
 @Composable
 fun ZoomableSample() {
-  val images = listOf(
-    R.drawable.giraffe,
-    R.drawable.hedgehog,
-  )
-  HorizontalPager(
-    state = rememberPagerState { images.size },
-  ) {
-    val zoomState = rememberZoomState()
-    Image(modifier = Modifier
-      .fillMaxSize()
-      .clipToBounds()
-      .scale(zoomState.scale)
-      .pointerInput(Unit) {
-        awaitEachGesture {
-          do {
-            val event = awaitPointerEvent()
-            val zoom = event.calculateZoom()
-            if (zoomState.canConsumeGesture(zoom)) {
-              zoomState.applyZoom(zoom)
-              event.changes.forEach { it.consume() }
-            }
-          } while (event.changes.any { it.pressed })
-        }
-      },
-      painter = painterResource(images[it]),
-      contentDescription = null,
-      contentScale = ContentScale.Fit
+    val images = listOf(
+        R.drawable.giraffe,
+        R.drawable.hedgehog,
     )
-  }
+    HorizontalPager(
+        state = rememberPagerState { images.size },
+    ) {
+        val zoomState = rememberZoomState()
+        Image(
+            modifier = Modifier
+                .fillMaxSize()
+                .clipToBounds()
+                .scale(zoomState.scale)
+                .pointerInput(Unit) {
+                    awaitEachGesture {
+                        do {
+                            val event = awaitPointerEvent()
+                            val zoom = event.calculateZoom()
+                            if (zoomState.canConsumeGesture(zoom)) {
+                                zoomState.applyZoom(zoom)
+                                event.changes.forEach { it.consume() }
+                            }
+                        } while (event.changes.any { it.pressed })
+                    }
+                },
+            painter = painterResource(images[it]),
+            contentDescription = null,
+            contentScale = ContentScale.Fit
+        )
+    }
 }
 
 
 class ZoomState {
-  var scale by mutableFloatStateOf(1f)
-    private set
+    var scale by mutableFloatStateOf(1f)
+        private set
 
-  fun canConsumeGesture(zoom: Float): Boolean {
-    return scale != 1f || zoom != 1f
-  }
+    fun canConsumeGesture(zoom: Float): Boolean {
+        return scale != 1f || zoom != 1f
+    }
 
-  fun applyZoom(zoom: Float) {
-    scale = (scale * zoom).coerceAtLeast(1f)
-  }
+    fun applyZoom(zoom: Float) {
+        scale = (scale * zoom).coerceAtLeast(1f)
+    }
 }
 
 @Composable

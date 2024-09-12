@@ -17,27 +17,28 @@ import androidx.compose.ui.res.painterResource
 
 @Composable
 fun PointerInputKeySample() {
-  Column {
-    var count by remember { mutableIntStateOf(1) }
-    val logger = remember(count) { Logger().apply { log("Log:$count") } }
+    Column {
+        var count by remember { mutableIntStateOf(1) }
+        val logger = remember(count) { Logger().apply { log("Log:$count") } }
 
-    Image(modifier = Modifier
-      .fillMaxWidth()
-      .weight(1f)
-      .pointerInput(Unit) {
-        awaitEachGesture {
-          do {
-            val event = awaitPointerEvent()
-            logger.log("${event.type}")
-          } while (event.changes.any { it.pressed })
-        }
-      },
-      painter = painterResource(R.drawable.dolphin),
-      contentDescription = null,
-    )
+        Image(
+            modifier = Modifier
+                .fillMaxWidth()
+                .weight(1f)
+                .pointerInput(Unit) {
+                    awaitEachGesture {
+                        do {
+                            val event = awaitPointerEvent()
+                            logger.log("${event.type}")
+                        } while (event.changes.any { it.pressed })
+                    }
+                },
+            painter = painterResource(R.drawable.dolphin),
+            contentDescription = null,
+        )
 
-    LogConsole(logger = logger, modifier = Modifier.weight(1f))
+        LogConsole(logger = logger, modifier = Modifier.weight(1f))
 
-    Button(onClick = { count++ }) { Text("Reset Log") }
-  }
+        Button(onClick = { count++ }) { Text("Reset Log") }
+    }
 }

@@ -23,42 +23,42 @@ import kotlinx.coroutines.launch
 
 @Composable
 fun MultiTouchSampleFixed() {
-  val logger = rememberLogger()
-  val scope = rememberCoroutineScope()
-  val dragState = remember { DragState() }
-  Column {
-    Box(modifier = Modifier
-      .fillMaxWidth()
-      .weight(1f)
-      .background(MaterialTheme.colorScheme.surfaceVariant)
-      .pointerInput(Unit) {
-        awaitEachGesture {
-          do {
-            val event = awaitPointerEvent()
-            val centroid = event.calculateCentroid()
-            val time = event.changes[0].uptimeMillis
-            if (centroid.isSpecified) {
-              scope.launch {
-                dragState.dragTo(centroid)
-                if (event.changes.size == 1) {
-                  dragState.trackVelocity(centroid, time)
+    val logger = rememberLogger()
+    val scope = rememberCoroutineScope()
+    val dragState = remember { DragState() }
+    Column {
+        Box(modifier = Modifier
+            .fillMaxWidth()
+            .weight(1f)
+            .background(MaterialTheme.colorScheme.surfaceVariant)
+            .pointerInput(Unit) {
+                awaitEachGesture {
+                    do {
+                        val event = awaitPointerEvent()
+                        val centroid = event.calculateCentroid()
+                        val time = event.changes[0].uptimeMillis
+                        if (centroid.isSpecified) {
+                            scope.launch {
+                                dragState.dragTo(centroid)
+                                if (event.changes.size == 1) {
+                                    dragState.trackVelocity(centroid, time)
+                                }
+                                logger.log("Velocity ${dragState.velocity}")
+                            }
+                        }
+                    } while (event.changes.any { it.pressed })
+                    scope.launch { dragState.doFling() }
                 }
-                logger.log("Velocity ${dragState.velocity}")
-              }
             }
-          } while (event.changes.any { it.pressed })
-          scope.launch { dragState.doFling() }
+        ) {
+            Image(
+                modifier = Modifier
+                    .size(80.dp)
+                    .offset { dragState.offset - IntOffset(40.dp.roundToPx(), 40.dp.roundToPx()) },
+                painter = painterResource(R.drawable.flamingo),
+                contentDescription = null
+            )
         }
-      }
-    ) {
-      Image(
-        modifier = Modifier
-          .size(80.dp)
-          .offset { dragState.offset - IntOffset(40.dp.roundToPx(), 40.dp.roundToPx()) },
-        painter = painterResource(R.drawable.flamingo),
-        contentDescription = null
-      )
+        LogConsole(logger = logger, modifier = Modifier.weight(1f))
     }
-    LogConsole(logger = logger, modifier = Modifier.weight(1f))
-  }
 }

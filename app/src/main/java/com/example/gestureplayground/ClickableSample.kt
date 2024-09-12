@@ -15,22 +15,23 @@ import androidx.compose.ui.semantics.Role
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun ClickableSample() {
-  val logger = rememberLogger()
-  Column {
-    Image(modifier = Modifier
-      .fillMaxWidth()
-      .weight(1f)
-      .background(MaterialTheme.colorScheme.surfaceVariant)
-      .combinedClickable(
-        onClickLabel = "clickの動作を確認する",
-        role = Role.Button,
-        onLongClick = { logger.log("LongClick") },
-        onDoubleClick = { logger.log("DoubleClick") },
-        onClick = { logger.log("Click") },
-      ),
-      painter = painterResource(R.drawable.arcticfox),
-      contentDescription = null
-    )
-    LogConsole(logger = logger, modifier = Modifier.weight(1f))
-  }
+    val logger = rememberLogger()
+    Column {
+        Image(
+            modifier = Modifier
+              .fillMaxWidth()
+              .weight(1f)
+              .background(MaterialTheme.colorScheme.surfaceVariant)
+              .combinedClickable(
+                onClickLabel = "clickの動作を確認する",
+                role = Role.Button,
+                onLongClick = { logger.log("LongClick") },
+                onDoubleClick = { logger.log("DoubleClick") },
+                onClick = { logger.log("Click") },
+              ),
+            painter = painterResource(R.drawable.arcticfox),
+            contentDescription = null
+        )
+        LogConsole(logger = logger, modifier = Modifier.weight(1f))
+    }
 }
