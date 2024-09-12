@@ -72,11 +72,11 @@ private val samples = listOf(
     ),
     Sample(
         name = "PointerInputにKeyを設定しない失敗例",
-        content = { PointerInputKeySample() } // TODO
+        content = { PointerInputKeySample() }
     ),
     Sample(
         name = "PointerInputにkeyを設定する例",
-        content = { PointerInputKeySample() } // TODO
+        content = { PointerInputKeySampleFixed() }
     ),
     Sample(
         name = "タップとドラッグの判定の失敗例",

@@ -16,7 +16,7 @@ import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.res.painterResource
 
 @Composable
-fun PointerInputKeySample() {
+fun PointerInputKeySampleFixed() {
   Column {
     var count by remember { mutableIntStateOf(1) }
     val logger = remember(count) { Logger().apply { log("Log:$count") } }
@@ -24,7 +24,7 @@ fun PointerInputKeySample() {
     Image(modifier = Modifier
       .fillMaxWidth()
       .weight(1f)
-      .pointerInput(Unit) {
+      .pointerInput(key1 = logger) {
         awaitEachGesture {
           do {
             val event = awaitPointerEvent()
